@@ -50,16 +50,25 @@ A aplicação deve identificar e classificar corretamente o comando que foi dito
 pip install requirements.txt
 ```
 
-3. Rode primeiro o servidor:
-
-dentro da pasta /source execute 
+3. Acesse a pasta source:
 ```bash
-fastapi dev server.py
+cd source 
 ```
 
-4. Com o servidor rodando execute o frontend:
+4. Rode primeiro o servidor:
+dentro da pasta "source" execute 
+```bash
+uvicorn server:app --reload --port 8080
+```
 
-dentro da pasta /public execute 
+5. Acesse a pasta public/sistemaP2:
+```bash
+cd public/sistemaP2 
+```
+
+6. Com o servidor rodando execute o frontend:
+
+dentro da pasta "public/sistemaP2" execute 
 ```bash
 ng serve
 ```
