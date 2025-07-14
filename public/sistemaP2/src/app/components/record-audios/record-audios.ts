@@ -20,7 +20,7 @@ export class Record {
   startRecording() {
     alert('Gravação da reunião iniciada!');
     this.statusMessage = 'Iniciando Gravacao!';
-    this.apiServiceAudio.postIniciarAudioReuniao().subscribe({
+    this.apiServiceAudio.postIniciarAudio().subscribe({
       next: (response) => {
         this.statusMessage = response.message;
         this.isRecording = true;
@@ -36,7 +36,7 @@ export class Record {
 
   stopRecording() {
     this.statusMessage = 'Parando gravação e processando áudio...';
-    this.apiServiceAudio.postPararAudioReuniao().subscribe({
+    this.apiServiceAudio.postPararAudio().subscribe({
       next: (response) => {
         console.log("estou aqui");
         this.statusMessage = 'Gravação Encerrada e processada!';

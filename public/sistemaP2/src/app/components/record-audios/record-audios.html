@@ -4,6 +4,7 @@
     <button (click)="startRecording()" [disabled]="isRecording">Iniciar Gravação</button>
     <button id="parar" (click)="stopRecording()"[disabled]="isRecording">Parar Gravação</button>
 
-    <p>Comando dito: {{statusMessage}}</p>
+    <p>Status: {{statusMessage}}</p>
+    <p>Palavra falada: {{}}</p>
 
 </div>
