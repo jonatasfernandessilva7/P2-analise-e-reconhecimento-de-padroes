@@ -51,11 +51,15 @@ pip install requirements.txt
 ```
 
 3. Rode primeiro o servidor:
+
+dentro da pasta /source execute 
 ```bash
 fastapi dev server.py
 ```
 
 4. Com o servidor rodando execute o frontend:
+
+dentro da pasta /public execute 
 ```bash
 ng serve
 ```
