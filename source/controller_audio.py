@@ -3,34 +3,31 @@ import os
 import sys
 import numpy as np
 
-# Ensure the parent directory is in the sys.path for module imports
+'''
+Fluxo
+
+recebe audio -> extrai as features via LPC -> transforma os dados via box cox e PCA -> recebe os sinais via fourier
+-> classifica no MLP 
+
+'''
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
-from scipy.io import wavfile  # Used for reading .wav files
+from scipy.io import wavfile
 from dotenv import load_dotenv
 
-# Import your service functions
-# Make sure 'service_fft.py' and 'service_microfone.py' are correctly
-# located relative to your sys.path or directly in your project.
 from service_fft import analisar_som_fourier, filtro_passa_baixa, detectar_padroes, salvar_espectrograma
 from service_microfone import gravar_audio_microfone, reconhecer_fala, stop_recording_continuous
 
-# Load environment variables (e.g., for API keys, if 'reconhecer_fala' uses one)
 load_dotenv()
 
-# Initialize FastAPI app
 app = FastAPI(
     title="Sistema de Análise de Áudio",
     description="API para gravar, processar e analisar áudio, detectando padrões e transcrevendo fala.",
     version="1.0.0"
 )
-
-
-# --- Funções de Serviço de Áudio (as que você já forneceu) ---
-# Você as moveria para um módulo separado (e.g., 'controllers/audio_controller.py')
-# ou as manteria aqui se este for o arquivo principal do controlador.
 
 async def iniciarGravacao():
     """
