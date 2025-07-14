@@ -1,0 +1,6 @@
+numpy
+fastapi[standard]
+souddevice
+mastplotlib
+scipy
+dotenv
