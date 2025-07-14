@@ -1,6 +1,8 @@
 numpy
 fastapi[standard]
-souddevice
+sounddevice
 mastplotlib
 scipy
 dotenv
+scikit-learn
+soundfile
