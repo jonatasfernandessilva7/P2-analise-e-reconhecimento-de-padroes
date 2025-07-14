@@ -1,0 +1,9 @@
+<div class="page-content">
+    <h1>Gravar Audio</h1>
+    <p>Use esta função para iniciar a gravação de um novo audio.</p>
+    <button (click)="startRecording()" [disabled]="isRecording">Iniciar Gravação</button>
+    <button id="parar" (click)="stopRecording()"[disabled]="isRecording">Parar Gravação</button>
+
+    <p>Comando dito: {{statusMessage}}</p>
+
+</div>

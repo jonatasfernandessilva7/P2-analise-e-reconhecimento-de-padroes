@@ -1,0 +1,4 @@
+/* Estilo para a área principal onde o conteúdo das páginas é exibido */
+.main-content {
+    flex-grow: 1;
+}
