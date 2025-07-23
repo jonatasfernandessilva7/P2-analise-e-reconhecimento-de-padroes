@@ -1,3 +1,5 @@
+import numpy as np
+
 _boxcox_lambda_val = 0  # Valor padrão para lambda (logaritmo)
 _boxcox_offset = 1e-7  # Pequeno valor para garantir que os dados sejam positivos
 

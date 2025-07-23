@@ -1,20 +1,20 @@
 import os
 import sys
 
-from fastapi.responses import JSONResponse
-from fastapi import APIRouter, File, UploadFile, HTTPException
-from controller_audio import iniciarGravacao, receber_e_processar_audio, processar_audio_enviado
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..","..")))
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter, File, UploadFile, HTTPException, Request
+from controller_audio import iniciarGravacao, receber_e_processar_audio, processar_audio_enviado
 
 router = APIRouter(
     prefix="/v1"
 )
 
 @router.post("/enviar-audio-wav")
-async def enviar_audio_wav(file: UploadFile = File(...)):
+async def enviar_audio_wav(request:Request, file: UploadFile = File(...)):
     try:
-        return await processar_audio_enviado(file)
+        return await processar_audio_enviado( request, file)
     except HTTPException as e:
         raise e  # Re-raise HTTPExceptions
     except Exception as e:
@@ -23,10 +23,7 @@ async def enviar_audio_wav(file: UploadFile = File(...)):
 @router.post("/iniciar-gravacao")
 async def receber_audio():
     try:
-        # A função iniciarGravacao() já deve lidar com a lógica de iniciar a gravação
-        # e talvez retornar um status ou ID de gravação se necessário.
-        # Por simplicidade aqui, apenas chamamos e confirmamos o início.
-        await iniciarGravacao()  # Assumimos que iniciarGravacao() é assíncrona ou não bloqueia
+        await iniciarGravacao()
         return JSONResponse({"status": 200, "message": "Gravação iniciada com sucesso."})
     except HTTPException as e:
         raise e
@@ -35,9 +32,9 @@ async def receber_audio():
 
 
 @router.post("/parar-gravacao")
-async def parar_gravacao():
+async def parar_gravacao(request:Request):
     try:
-        return await receber_e_processar_audio()
+        return await receber_e_processar_audio(request)
     except HTTPException as e:
         raise e  # Re-raise HTTPExceptions
     except Exception as e:

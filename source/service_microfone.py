@@ -6,7 +6,6 @@ import datetime
 import os
 
 from scipy.io.wavfile import write
-from dotenv import load_dotenv
 
 is_recording_flag = False
 audio_data_buffer = []
@@ -67,7 +66,6 @@ def stop_recording_continuous():
         return caminho_final
     else:
         return "Erro: O arquivo de áudio não foi salvo ou encontrado."
-
 
 def reconhecer_fala(caminho_audio:str):
     pass

@@ -1,7 +1,10 @@
 import numpy as np
 import os
+import sys
 
-from service_fft import analisar_som_fourier
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..","..")))
+
+from source.service_fft import fft_analysis_service
 
 def load_and_extract_features(audio_dir, labels_map):
     """
@@ -29,7 +32,7 @@ def load_and_extract_features(audio_dir, labels_map):
         for filename in os.listdir(class_dir):
             if filename.endswith(".wav"):  # Você pode adicionar outros formatos se suportados por soundfile
                 file_path = os.path.join(class_dir, filename)
-                features = analisar_som_fourier(file_path)  # Usando a função de análise de áudio
+                features = fft_analysis_service(file_path)  # Usando a função de análise de áudio
 
                 if "erro" in features:
                     print(f"Erro ao processar {file_path}: {features['erro']}")

@@ -2,6 +2,7 @@ import sys
 import zipfile
 import os
 import numpy as np
+import joblib
 
 # Adiciona o diretório acima ao path para importar os módulos
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -9,10 +10,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from source.service_preparacao_dados import load_and_extract_features, train_test_split_custom
 from source.service_mlp import initialize_mlp_parameters, mlp_predict, mlp_train
 from source.service_pca import pca_fit_transform, pca_transform
+from source.service_box_cox import boxcox_fit_transform, boxcox_transform
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.utils.multiclass import unique_labels
 
-# === 1. Extração do dataset ===
+# === Extração do dataset ===
 with zipfile.ZipFile('Dataset-comandos-voz-20250708T141849Z-1-001.zip', 'r') as zip_ref:
     zip_ref.extractall('dataset')
 
@@ -24,7 +26,10 @@ if len(subdirs_audios) == 1:
 else:
     raise Exception("Estrutura do dataset inesperada. Verifique o conteúdo do ZIP.")
 
-# === 2. Mapeamento das classes ===
+MODELS_DIR = "models"
+os.makedirs(MODELS_DIR, exist_ok=True)
+
+# === Mapeamento das classes ===
 labels_map = {
     "Brincar": 0,
     "Comer" : 1,
@@ -36,7 +41,7 @@ labels_map = {
     "Testar": 7
 }
 
-# === 3. Carregar os dados ===
+# === Carregar os dados ===
 X, y = load_and_extract_features(audios_dir, labels_map)
 
 print(f"número de amostras: {len(y)}\nAtributos por amostra: {X.shape[1]}")
@@ -46,28 +51,38 @@ for classe, idx in labels_map.items():
     count = np.sum(y == idx)
     print(f"Classe '{classe}' — {count} amostras")
 
-# === 4. Divisão treino/teste ===
+# === Divisão treino/teste ===
 X_train, X_test, y_train, y_test = train_test_split_custom(X, y, test_size=0.2, random_state=42)
 
-# === 5. Aplicar PCA ===
-X_train_pca, pca_params = pca_fit_transform(X_train, n_components=0.95)
-X_test_pca = pca_transform(X_test, pca_params)
+# === Aplica Box_Cox
+X_train_boxcox, boxcox_params = boxcox_fit_transform(X_train)
+X_test_boxcox = boxcox_transform(X_test, boxcox_params)
 
-# === 6. Treinar MLP ===
+# === Aplica PCA ===
+X_train_pca, pca_params = pca_fit_transform(X_train_boxcox, n_components=0.95)
+X_test_pca = pca_transform(X_test_boxcox, pca_params)
+
+# === Treina MLP ===
 input_size = X_train_pca.shape[1]
-hidden_size = 28
 output_size = len(labels_map)
+hidden_size = 26
 
-params = initialize_mlp_parameters(input_size, hidden_size, output_size)
-params = mlp_train(X_train_pca, y_train, params, learning_rate=0.01, epochs=300)
+mlp_params = initialize_mlp_parameters(input_size, hidden_size, output_size)
+mlp_params = mlp_train(X_train_pca, y_train, mlp_params, learning_rate=0.01, epochs=800)
 
-# === 7. Predição e avaliação ===
-y_pred = mlp_predict(X_test_pca, params)
+# === Predição e avaliação ===
+y_pred = mlp_predict(X_test_pca, mlp_params)
 acc = accuracy_score(y_test, y_pred)
 
 print("\nAcurácia:", round(acc * 100, 2), "%")
 
-# === 8. Relatório de classificação ===
+# === salvar modelo e seus parâmetros ===
+joblib.dump(boxcox_params, os.path.join(MODELS_DIR, "boxcox_params.pkl"))
+joblib.dump(pca_params, os.path.join(MODELS_DIR, "pca_params.pkl"))
+joblib.dump(mlp_params, os.path.join(MODELS_DIR, "mlp_params.pkl"))
+joblib.dump(labels_map, os.path.join(MODELS_DIR, "labels_map.pkl"))
+
+# === Relatório de classificação ===
 labels_presentes = sorted(unique_labels(y_test, y_pred))
 target_names_presentes = [classe for classe, idx in labels_map.items() if idx in labels_presentes]
 

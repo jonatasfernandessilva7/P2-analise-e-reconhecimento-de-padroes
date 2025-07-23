@@ -1,3 +1,11 @@
+import numpy as np
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from source.service_pca import softmax, relu_derivative, cross_entropy_loss, relu
+
 def initialize_mlp_parameters(input_size, hidden_size, output_size):
     """
     Inicializa os pesos e vieses da rede MLP.
@@ -19,7 +27,7 @@ def initialize_mlp_parameters(input_size, hidden_size, output_size):
     return params
 
 
-def mlp_train(X, y, params, learning_rate=0.01, epochs=1000):
+def mlp_train(X, y, params, learning_rate=0.01, epochs=20):
     """
     Treina o modelo MLP usando propagação feedforward e retropropagação.
 

@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import api
+from source.controller_audio import lifespan
 
-app = FastAPI(title="P2")
+app = FastAPI(title="P2", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

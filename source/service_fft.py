@@ -5,7 +5,7 @@ from scipy.signal import butter, lfilter
 import matplotlib.pyplot as plt
 import os
 
-def analisar_som_fourier(file:str):
+def fft_analysis_service(file:str):
 
     try:
 
