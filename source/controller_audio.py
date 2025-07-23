@@ -5,6 +5,8 @@ import sys
 import joblib
 import numpy as np
 
+from source.idenpotency_module_utils import idempotency
+
 '''
 Fluxo
 
@@ -96,8 +98,8 @@ async def processar_audio_para_ml(app: FastAPI,caminho_audio: str):
         "prediction_probabilities": probabilities[0].tolist()  # Converter para lista para JSON
     }
 
-
-async def iniciarGravacao():
+@idempotency
+async def iniciarGravacao(**kwargs):
     """
     Inicia a gravação de áudio do microfone.
     Retorna o caminho do arquivo de áudio temporário onde a gravação será salva.

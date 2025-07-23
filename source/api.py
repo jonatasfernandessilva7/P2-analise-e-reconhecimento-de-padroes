@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -23,7 +24,8 @@ async def enviar_audio_wav(request:Request, file: UploadFile = File(...)):
 @router.post("/iniciar-gravacao")
 async def receber_audio():
     try:
-        await iniciarGravacao()
+        request_idempotency_key = str(uuid.uuid4())
+        await iniciarGravacao(idempotency_key=request_idempotency_key)
         return JSONResponse({"status": 200, "message": "Gravação iniciada com sucesso."})
     except HTTPException as e:
         raise e
