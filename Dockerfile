@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn server:app --reload --port 9999", "your_script_name.py"]
+CMD ["uvicorn server:app --reload --port 9999", "server.py"]
