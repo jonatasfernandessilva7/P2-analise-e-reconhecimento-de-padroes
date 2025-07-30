@@ -14,4 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#injetect for render
+@app.get("/")
+async def read_root():
+    return {"message": "Service is running!"}
+
 app.include_router(api.router)
