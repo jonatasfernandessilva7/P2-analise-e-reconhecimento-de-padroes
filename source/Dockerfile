@@ -1,14 +1,14 @@
-FROM python:3.13
+FROM python:3.13-slim-bookworm
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /source
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn server:app --reload --port 9999", "server.py"]
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
