@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 #injetect for render
-@app.get("/")
+@router.get("/")
 async def read_root():
     return {"message": "Service is running!"}
 
