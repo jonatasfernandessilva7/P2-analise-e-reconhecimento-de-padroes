@@ -1,8 +1,0 @@
-numpy
-fastapi[standard]
-sounddevice
-mastplotlib
-scipy
-dotenv
-scikit-learn
-soundfile

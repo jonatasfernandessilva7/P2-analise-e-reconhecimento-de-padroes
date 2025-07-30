@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class ApiServiceRecord {
 
-  private baseUrl: string = 'http://localhost:8080/v1';
+  private baseUrl: string = 'http://localhost:3000/v1';
 
   constructor(private http: HttpClient) { }
 

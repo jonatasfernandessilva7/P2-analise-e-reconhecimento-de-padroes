@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ApiServiceRecord} from '../../services/record-audio';
 
@@ -11,41 +11,34 @@ import {ApiServiceRecord} from '../../services/record-audio';
 })
 export class Record {
 
-  isRecording: boolean = false;
-  statusMessage: string = 'Pronto pra gravar';
-  responseMessage: any;
+  isRecording:boolean = false;
+  ml_prediction!: string;
 
-  constructor(private apiServiceAudio: ApiServiceRecord) { }
+  constructor(private apiService: ApiServiceRecord, private cdr: ChangeDetectorRef) {}
 
   startRecording() {
-    alert('Gravação da reunião iniciada!');
-    this.statusMessage = 'Iniciando Gravacao!';
-    this.apiServiceAudio.postIniciarAudio().subscribe({
-      next: (response) => {
-        this.statusMessage = response.message;
-        this.isRecording = true;
-        this.responseMessage = response;
+    this.isRecording = true;
+    this.apiService.postIniciarAudio().subscribe({
+      next: () => {
+        console.log('Gravação iniciada');
       },
-      error: (error) => {
-        this.statusMessage = `Erro ao iniciar gravacao: ${error.message}`;
-        console.log(error);
-      }
+      error: (err) => console.error(err)
     });
-
   }
 
   stopRecording() {
-    this.statusMessage = 'Parando gravação e processando áudio...';
-    this.apiServiceAudio.postPararAudio().subscribe({
+    this.apiService.postPararAudio().subscribe({
       next: (response) => {
-        console.log("estou aqui");
-        this.statusMessage = 'Gravação Encerrada e processada!';
+        console.log('Gravação parada', response);
         this.isRecording = false;
-        this.responseMessage = response;
+        this.ml_prediction = response?.body?.ml_prediction || 'Não reconhecido';
+        this.cdr.detectChanges();
       },
-      error: (error) => {
-        this.statusMessage = `Erro ao parar gravação: ${error.error.detail || error.message}`;
-        console.error(error);
+      error: (err) => {
+        console.error(err);
+        this.isRecording = false;
+        this.ml_prediction = 'Erro ao processar';
+        this.cdr.detectChanges();
       }
     });
   }

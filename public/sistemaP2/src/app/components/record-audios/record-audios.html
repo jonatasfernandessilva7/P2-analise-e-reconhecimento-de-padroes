@@ -1,10 +1,12 @@
 <div class="page-content">
-    <h1>Gravar Audio</h1>
-    <p>Use esta função para iniciar a gravação de um novo audio.</p>
-    <button (click)="startRecording()" [disabled]="isRecording">Iniciar Gravação</button>
-    <button id="parar" (click)="stopRecording()"[disabled]="isRecording">Parar Gravação</button>
+  <h1>Gravar Áudio</h1>
+  <p>Use esta função para iniciar a gravação de um novo áudio.</p>
 
-    <p>Status: {{statusMessage}}</p>
-    <p>Palavra falada: {{}}</p>
+  <button (click)="startRecording()" [disabled]="isRecording">Iniciar Gravação</button>
+  <button (click)="stopRecording()" [disabled]="!isRecording">Parar Gravação</button>
+
+  @if (ml_prediction) {
+    <p>Palavra falada: <strong>{{ ml_prediction }}</strong></p>
+  }
 
 </div>
