@@ -15,7 +15,7 @@ app.add_middleware(
 )
 
 #injetect for render
-@app.get("/")
+@app.get("/v1/")
 async def read_root():
     return {"message": "Service is running!"}
 
