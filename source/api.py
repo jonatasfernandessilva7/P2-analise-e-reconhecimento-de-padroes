@@ -12,6 +12,11 @@ router = APIRouter(
     prefix="/v1"
 )
 
+#injetect for render
+@app.get("/")
+async def read_root():
+    return {"message": "Service is running!"}
+
 @router.post("/iniciar-gravacao")
 async def receber_audio():
     try:
