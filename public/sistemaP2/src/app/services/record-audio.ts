@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class ApiServiceRecord {
 
-  private baseUrl: string = 'http://localhost:3000/v1';
+  private baseUrl: string = 'https://p2-analise-e-reconhecimento-de-padroes.onrender.com/v1';
 
   constructor(private http: HttpClient) { }
 
