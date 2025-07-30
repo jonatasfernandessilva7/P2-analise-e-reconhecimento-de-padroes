@@ -58,7 +58,7 @@ cd source
 4. Rode primeiro o servidor:
 dentro da pasta "source" execute 
 ```bash
-uvicorn server:app --reload --port 8080
+uvicorn server:app --reload --port 3000
 ```
 
 5. Acesse a pasta public/sistemaP2:
