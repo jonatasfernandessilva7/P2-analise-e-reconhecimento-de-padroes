@@ -5,13 +5,6 @@ import joblib
 import librosa
 import numpy as np
 
-'''
-Fluxo
-
-recebe audio -> extrai as features via FFT -> transforma os dados via box cox e PCA -> classifica no MLP 
-
-'''
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from contextlib import asynccontextmanager
