@@ -14,9 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#injetect for render
-@app.get("/v1/")
-async def read_root():
-    return {"message": "Service is running!"}
-
 app.include_router(api.router)
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=10000)
