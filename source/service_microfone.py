@@ -30,9 +30,9 @@ def gravar_audio_microfone(samplerate=44100):
     audio_file_path = os.path.join(pasta, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
 """
 
-pastaRender = "/tmp/audios"
-os.makedirs(pastaRender, exist_ok=True)
-audio_file_path_render = os.path.join(pastaRender, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
+    pastaRender = "/tmp/audios"
+    os.makedirs(pasta, exist_ok=True)
+    audio_file_path_render = os.path.join(pastaRender, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
 
 
     def gravaAudio():
