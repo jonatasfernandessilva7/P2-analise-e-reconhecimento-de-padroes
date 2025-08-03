@@ -8,7 +8,7 @@ app = FastAPI(title="P2", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["https://p2-analise-e-reconhecimento-de-padroes-0qjq.onrender.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
