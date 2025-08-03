@@ -1,12 +1,23 @@
-FROM node:22
+FROM node:22.14.0 AS build
 
 WORKDIR /app
 
+COPY package*.json ./
+RUN npm ci || (rm -rf node_modules && npm install)
+
 COPY . .
 
-RUN npm install
-RUN npm install @angular/cli -g
+RUN npm run build
 
-EXPOSE 4200
+FROM node:22.14.0
 
-CMD ["ng", "serve", "--host", "0.0.0.0"]
+WORKDIR /app
+
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package*.json ./
+
+RUN npm ci --omit=dev || (rm -rf node_modules && npm install --omit=dev)
+
+EXPOSE 4000
+
+CMD ["node", "dist/sistemaP2/server/server.mjs"]
