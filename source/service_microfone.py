@@ -24,9 +24,15 @@ def gravar_audio_microfone(samplerate=44100):
     audio_data_buffer = []
     samplerate_global = samplerate
 
+"""
     pasta = os.path.join(os.path.dirname(__file__), "..", "audios/")
     os.makedirs(pasta, exist_ok=True)
     audio_file_path = os.path.join(pasta, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
+"""
+
+pastaRender = "/tmp/audios"
+os.makedirs(pastaRender, exist_ok=True)
+audio_file_path_render = os.path.join(pastaRender, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
 
 
     def gravaAudio():
@@ -40,7 +46,7 @@ def gravar_audio_microfone(samplerate=44100):
         print("Thread de gravacao encerrada")
         if audio_data_buffer:
             final_audio = np.concatenate(audio_data_buffer, axis=0)
-            write(audio_file_path, samplerate_global, final_audio)
+            write(audio_file_path_render, samplerate_global, final_audio)
             print(f"audio salvo em {audio_file_path}")
         else:
             print("nenhum audio foi gravado")
