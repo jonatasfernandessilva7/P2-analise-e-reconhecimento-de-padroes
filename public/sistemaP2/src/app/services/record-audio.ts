@@ -12,12 +12,8 @@ export class ApiServiceRecord {
 
   constructor(private http: HttpClient) { }
 
-  postIniciarAudio() : Observable<any> {
-    return this.http.post(`${this.baseUrl}/iniciar-gravacao`, {})
-  }
-
-  postPararAudio(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/parar-gravacao`, {})
+  enviarAudio(formData: FormData) {
+    return this.http.post<any>(`${this.baseUrl}/upload-audio`, formData);
   }
 
 }
