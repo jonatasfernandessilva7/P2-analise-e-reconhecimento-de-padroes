@@ -27,7 +27,7 @@ export class Record {
     this.chunks = [];
 
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      this.mediaRecorder = new MediaRecorder(stream, {mimeType: 'audio/wav'});
+      this.mediaRecorder = new MediaRecorder(stream, {mimeType: 'audio/webm'});
       this.mediaRecorder.start();
 
       this.mediaRecorder.ondataavailable = e => {
