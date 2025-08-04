@@ -122,4 +122,5 @@ async def receber_e_processar_audio(request:Request, file: UploadFile = File(...
         })
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=f"Erro ao receber/processar áudio: {e}")
