@@ -4,6 +4,7 @@ import sys
 import joblib
 import librosa
 import numpy as np
+from pydub import AudioSegment
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -99,12 +100,19 @@ async def receber_e_processar_audio(request:Request, file: UploadFile = File(...
         # Lê o conteúdo do arquivo WAV
         rate, signal = wavfile.read(caminho_temp)
 
+        caminho_wav = caminho_temp.rsplit(".", 1)[0] + ".wav"
+        audio = AudioSegment.from_file(caminho_temp)
+        audio = audio.set_channels(1)
+        audio = audio.set_frame_rate(SR)
+        audio.export(caminho_wav, format="wav")
+
         # Se estéreo, pega só um canal
+        rate, signal = wavfile.read(caminho_wav)
         if len(signal.shape) > 1:
             signal = signal[:, 0]
 
         detalhes_evento = {
-            "caminho_audio": caminho_temp,
+            "caminho_audio": caminho_wav,
             "duracao_segundos": f"{len(signal) / rate:.2f}",
             "sample_rate": str(rate)
         }
