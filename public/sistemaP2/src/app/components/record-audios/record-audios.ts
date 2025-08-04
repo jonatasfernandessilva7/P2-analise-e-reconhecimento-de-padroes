@@ -47,9 +47,9 @@ export class Record {
     this.mediaRecorder.stop();
 
     this.mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(this.chunks, { type: 'audio/wav' });
+      const audioBlob = new Blob(this.chunks, { type: 'audio/webm' });
       const formData = new FormData();
-      formData.append('file', audioBlob, 'gravacao.wav');
+      formData.append('file', audioBlob, 'gravacao.webm');
 
       this.apiService.enviarAudio(formData).subscribe({
         next: (response) => {
