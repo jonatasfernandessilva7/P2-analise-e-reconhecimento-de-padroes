@@ -97,15 +97,15 @@ async def receber_e_processar_audio(request:Request, file: UploadFile = File(...
         if os.path.getsize(caminho_temp) == 0:
             raise HTTPException(status_code=400, detail="Arquivo enviado está vazio.")
 
-        # Lê o conteúdo do arquivo WAV
-        rate, signal = wavfile.read(caminho_temp)
-
         caminho_wav = caminho_temp.rsplit(".", 1)[0] + ".wav"
         audio = AudioSegment.from_file(caminho_temp)
         audio = audio.set_channels(1)
         audio = audio.set_frame_rate(SR)
         audio.export(caminho_wav, format="wav")
 
+        # Lê o conteúdo do arquivo WAV
+        rate, signal = wavfile.read(caminho_wav)
+        
         # Se estéreo, pega só um canal
         rate, signal = wavfile.read(caminho_wav)
         if len(signal.shape) > 1:
