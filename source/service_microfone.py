@@ -24,8 +24,7 @@ def gravar_audio_microfone(samplerate=44100):
     audio_data_buffer = []
     samplerate_global = samplerate
 
-
-    pasta = "/tmp/audios"
+    pasta = os.path.join(os.path.dirname(__file__), "..", "audios/")
     os.makedirs(pasta, exist_ok=True)
     audio_file_path = os.path.join(pasta, f"audio_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.wav")
 
@@ -67,6 +66,3 @@ def stop_recording_continuous():
         return caminho_final
     else:
         return "Erro: O arquivo de áudio não foi salvo ou encontrado."
-
-def reconhecer_fala(caminho_audio:str):
-    pass
