@@ -8,12 +8,16 @@ import { Observable } from 'rxjs';
 
 export class ApiServiceRecord {
 
-  private baseUrl: string = 'https://p2-analise-e-reconhecimento-de-padroes.onrender.com/v1';
+  private baseUrl: string = 'https://localhost:10000/v1';
 
   constructor(private http: HttpClient) { }
 
-  enviarAudio(formData: FormData) {
-    return this.http.post<any>(`${this.baseUrl}/upload-audio`, formData);
+  postIniciarAudio() : Observable<any> {
+    return this.http.post(`${this.baseUrl}/iniciar-gravacao`, {})
+  }
+
+  postPararAudio(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/parar-gravacao`, {})
   }
 
 }
