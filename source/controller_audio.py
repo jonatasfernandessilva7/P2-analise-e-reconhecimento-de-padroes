@@ -4,18 +4,18 @@ import sys
 import joblib
 import librosa
 import numpy as np
-from pydub import AudioSegment
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request, UploadFile, File
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from scipy.io import wavfile
 from dotenv import load_dotenv
 
+from source.idenpotency_module_utils import idempotency
 from service_microfone import gravar_audio_microfone, stop_recording_continuous
 from source.service_extracao import extrair_features, SR
 
@@ -79,7 +79,20 @@ async def processar_audio_para_ml(app: FastAPI, caminho_audio: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao processar áudio para ML: {e}")
 
-async def receber_e_processar_audio(request:Request, file: UploadFile = File(...)):
+
+@idempotency
+async def iniciarGravacao(**kwargs):
+    """
+    Inicia a gravação de áudio do microfone.
+    Retorna o caminho do arquivo de áudio temporário onde a gravação será salva.
+    """
+    gravacao = gravar_audio_microfone()
+    if gravacao is None:
+        raise HTTPException(status_code=404, detail="Arquivo de áudio é nulo ou a gravação falhou.")
+    return gravacao
+
+
+async def receber_e_processar_audio(request:Request):
     """
     Para uma gravação contínua em andamento, processa o áudio:
     - Lê o arquivo gerado
@@ -87,41 +100,36 @@ async def receber_e_processar_audio(request:Request, file: UploadFile = File(...
     - Retorna as informações como JSON
     """
     # Para a gravação e pega o caminho do arquivo .wav
+    caminho_temp = stop_recording_continuous()
+
+    if not caminho_temp or not os.path.exists(caminho_temp):
+        raise HTTPException(status_code=400, detail="Arquivo de gravação não encontrado ou erro na gravação.")
+
+    if os.path.getsize(caminho_temp) == 0:
+        raise HTTPException(status_code=500, detail="Arquivo de áudio está vazio.")
+
     try:
-        caminho_temp = f"/tmp/{file.filename}"
-
-        # Salva o arquivo enviado
-        with open(caminho_temp, "wb") as f:
-            f.write(await file.read())
-
-        if os.path.getsize(caminho_temp) == 0:
-            raise HTTPException(status_code=400, detail="Arquivo enviado está vazio.")
-
-        caminho_wav = caminho_temp.rsplit(".", 1)[0] + ".wav"
-        audio = AudioSegment.from_file(caminho_temp)
-        audio = audio.set_channels(1)
-        audio = audio.set_frame_rate(SR)
-        audio.export(caminho_wav, format="wav")
-
         # Lê o conteúdo do arquivo WAV
-        rate, signal = wavfile.read(caminho_wav)
-        
-        # Se estéreo, pega só um canal
-        rate, signal = wavfile.read(caminho_wav)
+        rate, signal = wavfile.read(caminho_temp)
+
+        # Se estéreo, pega apenas o primeiro canal
         if len(signal.shape) > 1:
             signal = signal[:, 0]
 
         detalhes_evento = {
-            "caminho_audio": caminho_wav,
+            "caminho_audio": caminho_temp,
             "duracao_segundos": f"{len(signal) / rate:.2f}",
             "sample_rate": str(rate)
         }
 
         try:
+            # Processa o áudio com o pipeline de ML
             ml_prediction = await processar_audio_para_ml(request.app, caminho_temp)
             detalhes_evento["ml_prediction"] = ml_prediction
+        except HTTPException as ml_exc:
+            detalhes_evento["ml_error"] = str(ml_exc.detail)
         except Exception as e:
-            detalhes_evento["ml_error"] = f"Erro no modelo: {e}"
+            detalhes_evento["ml_error"] = f"Erro na análise de ML: {e}"
 
         return JSONResponse({
             "status": 200,
@@ -130,5 +138,4 @@ async def receber_e_processar_audio(request:Request, file: UploadFile = File(...
         })
 
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail=f"Erro ao receber/processar áudio: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao processar áudio: {e}")
