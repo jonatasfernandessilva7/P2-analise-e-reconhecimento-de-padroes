@@ -1,23 +1,39 @@
-import { Injectable } from '@angular/core';
-import { HttpClient} from '@angular/common/http';
-import { Observable } from 'rxjs';
+import os
+import sys
+import uuid
 
-@Injectable({
-  providedIn: 'root'
-})
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-export class ApiServiceRecord {
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter, HTTPException, Request
+from controller_audio import iniciarGravacao, receber_e_processar_audio
 
-  private baseUrl: string = 'https://localhost:10000/v1';
+router = APIRouter(
+    prefix="/v1"
+)
 
-  constructor(private http: HttpClient) { }
+#injetect for render
+@router.get("/")
+async def read_root():
+    return {"message": "Service is running!"}
 
-  postIniciarAudio() : Observable<any> {
-    return this.http.post(`${this.baseUrl}/iniciar-gravacao`, {})
-  }
+@router.post("/iniciar-gravacao")
+async def receber_audio():
+    try:
+        request_idempotency_key = str(uuid.uuid4())
+        await iniciarGravacao(idempotency_key=request_idempotency_key)
+        return JSONResponse({"status": 200, "message": "Gravação iniciada com sucesso."})
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao iniciar gravação: {e}")
 
-  postPararAudio(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/parar-gravacao`, {})
-  }
 
-}
+@router.post("/parar-gravacao")
+async def parar_gravacao(request:Request):
+    try:
+        return await receber_e_processar_audio(request)
+    except HTTPException as e:
+        raise e  # Re-raise HTTPExceptions
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao parar e processar gravação: {e}")
